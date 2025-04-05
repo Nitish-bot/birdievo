@@ -3,6 +3,9 @@
 /// towards a target (bird food) to get a positive feedback (eat it).
 use rand::{ Rng, RngCore };
 
+#[macro_use]
+mod utils;
+
 #[derive(Debug)]
 pub struct Network {
     layers: Vec<Layer>,
