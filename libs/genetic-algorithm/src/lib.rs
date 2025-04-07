@@ -39,7 +39,7 @@ where
                 let parent_b = self.selection_method.select(rng, population).chromosome();
                 let mut child = self.crossover_method.crossover(rng, parent_a, parent_b);
                 
-                self.mutation_method.mutate(rng, &mut child);
+                // self.mutation_method.mutate(rng, &mut child);
 
                 I::create(child)
             })
@@ -73,6 +73,7 @@ impl SelectionMethod for RouletteWheelSelection {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct Chromosome {
     genes: Vec<f32>,
 }
@@ -113,6 +114,12 @@ impl FromIterator<f32> for Chromosome {
         Self {
             genes: iter.into_iter().collect(),
         }
+    }
+}
+
+impl PartialEq for Chromosome {
+    fn eq(&self, other: &Self) -> bool {
+        approx::relative_eq!(self.genes.as_slice(), other.genes.as_slice())
     }
 }
 
@@ -201,28 +208,41 @@ mod tests {
     use std::collections::BTreeMap;
     use std::iter::FromIterator;
 
-    #[derive(Clone, Debug)]
-    struct TestIndividual {
-        fitness: f32,
+    #[derive(Clone, Debug, PartialEq)]
+    enum TestIndividual {
+        /// For tests that require the chromosome
+        WithChromosome { chromosome: Chromosome },
+        /// For tests that only require the fitness
+        WithFitness { fitness: f32 },
     }
 
     impl TestIndividual {
         fn new(fitness: f32) -> Self {
-            Self { fitness }
+            Self::WithFitness { fitness }
         }
     }
 
     impl Individual for TestIndividual {
         fn create(chromosome: Chromosome) -> Self {
-            todo!()
-        }
-
-        fn fitness(&self) -> f32 {
-            self.fitness
+            Self::WithChromosome { chromosome }
         }
 
         fn chromosome(&self) -> &Chromosome {
-            panic!("not supported for test")
+            match self {
+                Self::WithChromosome { chromosome } => chromosome,
+
+                Self::WithFitness { fitness: _ } => panic!("not supported for WithFitness"),
+            }
+        }
+
+        fn fitness(&self) -> f32 {
+            match self {
+                Self::WithChromosome { chromosome } => {
+                    chromosome.iter().sum()
+                }
+
+                Self::WithFitness { fitness } => *fitness,
+            }
         }
     }
 
@@ -374,5 +394,40 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn genetic_algorithm() {
+        fn individual(genes: &[f32]) -> TestIndividual {
+            TestIndividual::create(genes.iter().cloned().collect())
+        }
+
+        let mut rng = ChaCha8Rng::from_seed(Default::default());
+
+        let gen_algo = GeneticAlgorithm::new(
+            RouletteWheelSelection,
+            UniformCrossover,
+            GaussianMutation::new(0.5, 0.5),
+        );
+
+        let mut population = vec![
+            individual(&[0., 0., 0.]),
+            individual(&[1., 1., 1.]),
+            individual(&[1., 2., 1.]),
+            individual(&[1., 2., 4.]),
+        ];
+
+        for _ in 0..10 {
+            population = gen_algo.evolve(&mut rng, &population);
+        }
+
+        let expected_population = vec![
+            individual(&[1.0613362, 2.1978111, 4.3614755]),
+            individual(&[0.78856236, 1.4677399, 3.9275243]),
+            individual(&[0.78856236, 1.9645008, 3.8889477]),
+            individual(&[0.78856236, 2.080066, 3.6113224]),
+        ];
+
+        assert_eq!(population, expected_population);
     }
 }
