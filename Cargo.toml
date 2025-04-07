@@ -3,6 +3,7 @@ resolver = "2"
 
 members = [
     "libs/*",
+    "src/simulation-wasm",
 ]
 
 [package]
