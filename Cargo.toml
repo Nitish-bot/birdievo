@@ -3,13 +3,8 @@ resolver = "2"
 
 members = [
     "libs/*",
-    "src/simulation-wasm",
+    "frontend/simulation-wasm",
 ]
-
-[package]
-name = "birdievo"
-version = "0.1.0"
-edition = "2024"
 
 [workspace.dependencies]
 rand = "0.8"
