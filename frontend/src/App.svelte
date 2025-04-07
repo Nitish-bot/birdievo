@@ -1,11 +1,11 @@
 <script lang="ts">
-  import init, { whos_that_dog } from 'lib-simulation-wasm'
+  import init, * as sim from 'simulation-wasm'
   import { onMount } from 'svelte'  
 
   onMount(async () => {
     await init()
 
-    alert(whos_that_dog())
+    alert(sim.whos_that_dog())
   })
 </script>
 

@@ -18,6 +18,8 @@
     "tslib": "^2.6.3",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
-    "lib-simulation-wasm": "file:./simulation-wasm/pkg"
+    "simulation-wasm": "file:./simulation-wasm/pkg",
+    "@types/node": "^22.6.1",
+    "svelte-preprocess": "^6.0.2"
   }
 }
