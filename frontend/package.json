@@ -1,13 +1,12 @@
 {
-  "name": "create-wasm-app",
+  "name": "birdievo",
   "version": "0.1.0",
-  "description": "create an app to consume rust-generated wasm packages",
+  "description": "watch bird evo",
   "main": "./bundle.js",
   "scripts": {
     "build": "pnpm wasm:build && webpack --mode production",
-    "start": "pnpm wasm:build && webpack serve --mode development",
-    "wasm:build": "wasm-pack build ./simulation-wasm --out-dir=../pkg",
-    "wasm:bind": "wasm-bindgen --out-dir=./simulation --omit-default-module-path target/wasm32-unknown-unknown/debug/simulation_wasm.wasm"
+    "start": "pnpm wasm:build && pnpm install && webpack serve --mode development",
+    "wasm:build": "wasm-pack build ./simulation-wasm --out-dir=../pkg"
   },
   "license": "MIT",
   "devDependencies": {

@@ -12,6 +12,10 @@ impl Simulation {
             world: World::random(rng),
         }
     }
+
+    pub fn world(&self) -> &World {
+        &self.world
+    }
 }
 
 #[derive(Debug)]
@@ -32,6 +36,14 @@ impl World {
 
         Self { animals, foods }
     }
+
+    pub fn animals(&self) -> &[Animal] {
+        &self.animals
+    }
+
+    pub fn foods(&self) -> &[Food] {
+        &self.foods
+    }
 }
 
 #[derive(Debug)]
@@ -47,10 +59,18 @@ pub struct Animal {
 impl Animal {
     pub fn random(rng: &mut dyn RngCore) -> Self {
         Self {
-            position: rng.r#gen(),
+            position: gen_vec2(rng),
             angle: rng.r#gen(),
             speed: 0.002,
         }
+    }
+
+    pub fn position(&self) -> Vec2 {
+        self.position
+    }
+
+    pub fn angle(&self) -> f32 {
+        self.angle
     }
 }
 
@@ -62,10 +82,18 @@ pub struct Food {
 impl Food {
     fn random(rng: &mut dyn RngCore) -> Self { 
         Self {
-            position: rng.r#gen::<Vec2>(),
+            position: gen_vec2(rng),
         }
     }
+
+    pub fn position(&self) -> Vec2 {
+        self.position
+    }
 }
+
+fn gen_vec2(rng: &mut dyn RngCore) -> Vec2 {
+    Vec2::new(rng.r#gen(), rng.r#gen())
+ }
 
 #[cfg(test)]
 mod tests {
