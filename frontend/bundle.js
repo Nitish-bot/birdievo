@@ -1,31 +1,41 @@
 import * as sim from 'simulation-wasm';
-import { high_res_ctx } from './utils.js';
+import { draw_triangle, draw_circle,  high_res_ctx } from './utils.js';
 
 const simulation = new sim.Simulation();
 const viewport = document.getElementById('viewport');
 
-CanvasRenderingContext2D.prototype.drawTriangle = 
-    function(x, y, size) {
-        this.beginPath();
-        this.moveTo(x, y);
-        this.lineTo(x + size, y + size);
-        this.lineTo(x - size, y + size);
-        this.lineTo(x, y);
-        this.fillStyle = 'rgb(0, 0, 0)';
-        this.fill();
-    }
+CanvasRenderingContext2D.prototype.drawTriangle = draw_triangle;
+CanvasRenderingContext2D.prototype.drawCircle = draw_circle;
 
-// const viewportWidth = viewport.width;
-// const viewportHeight = viewport.height;
+const viewportWidth = viewport.width;
+const viewportHeight = viewport.height;
 const ctx = high_res_ctx(viewport);
 
-for (const animal of simulation.world().animals) {
-    console.log(animal.x)
-    ctx.drawTriangle(
-        animal.x * viewport.width,
-        animal.y * viewport.height,
-        0.5 * viewport.width,
-    )
+function redraw() {
+    ctx.clearRect(0, 0, viewportWidth, viewportHeight)
+
+    simulation.step();
+
+    const world = simulation.world();
+
+    for (const food of world.foods) {
+        ctx.drawCircle(
+            food.x * viewportWidth,
+            food.y * viewportHeight,
+            0.005 * viewportWidth,
+        );
+    }
+
+    for (const animal of world.animals) {
+        ctx.drawTriangle(
+            animal.x * viewportWidth,
+            animal.y * viewportHeight,
+            0.02 * viewport.width,
+            animal.rotation,
+        )
+    }
+
+    requestAnimationFrame(redraw);
 }
 
-// ctx.drawTriangle(250, 100, 200, 0);
+redraw();

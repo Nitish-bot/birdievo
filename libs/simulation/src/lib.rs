@@ -1,5 +1,6 @@
 // This library simulates
-use glam::Vec2;
+use std::f32::{self, consts::{ FRAC_PI_2, PI}};
+use glam::{ Affine2, Vec2 };
 use rand::{Rng, RngCore};
 
 pub struct Simulation {
@@ -15,6 +16,24 @@ impl Simulation {
 
     pub fn world(&self) -> &World {
         &self.world
+    }
+
+    pub fn step(&mut self) {
+        for animal in &mut self.world.animals {
+            // We add PI / 2 radians to the angle since our 
+            // 2D rendering canvas is a co-ordinate system rotated
+            // by PI / 2 radians
+            // TLDR: x and y increase in towards the bottom right
+            let angle = animal.angle() + FRAC_PI_2;
+            let pos = animal.position();
+            
+            let angle_vector = Vec2::new(angle.cos(), angle.sin());
+            let displacement = pos + angle_vector * animal.speed;
+            
+            // We clamp the value of x and y co-ordinates 
+            // since the renderer uses a unit space
+            animal.position = displacement.clamp(Vec2::splat(0.05), Vec2::splat(0.95));
+        }
     }
 }
 
@@ -48,11 +67,11 @@ impl World {
 
 #[derive(Debug)]
 pub struct Animal {
-    // Contains co-ordinate of the animal
+    /// Contains co-ordinate of the animal within bounds 0..=1
     position: Vec2,
-    // Contains direction in terms of f32::consts::PI (180deg)
+    /// Contains direction in terms of f32::consts::PI (180deg)
     angle: f32,
-    // Contains speed in unit/s
+    /// Contains speed in unit/s
     speed: f32,
 }
 
@@ -60,8 +79,8 @@ impl Animal {
     pub fn random(rng: &mut dyn RngCore) -> Self {
         Self {
             position: gen_vec2(rng),
-            angle: rng.r#gen(),
-            speed: 0.002,
+            angle: rng.gen_range(0.0..=(2. * PI)),
+            speed: 0.001,
         }
     }
 
@@ -98,10 +117,4 @@ fn gen_vec2(rng: &mut dyn RngCore) -> Vec2 {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
 }

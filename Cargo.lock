@@ -178,6 +178,7 @@ name = "simulation-wasm"
 version = "0.1.0"
 dependencies = [
  "getrandom",
+ "glam",
  "lib-simulation",
  "rand",
  "wasm-bindgen",

@@ -14,6 +14,7 @@ module.exports = {
   devServer: {
     static: path.join(__dirname, "dist"),
     hot: true,
+    port: 8080,
   },
   plugins: [
     new CopyWebpackPlugin({
