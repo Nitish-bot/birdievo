@@ -15,6 +15,8 @@ https://pwy.io/posts/learning-to-fly-pt1/
 - Commands can be replaced with ui buttons
 - Experiment in 3d, give that a UI
 - Simulate unnecessarily more dimensions maybe someone would want that
+- Add ability for agents to see other agents (maybe they see that some other agent will get there first and change target)
+- Add ability to attack agents
 - OR abandon it completely (dont)
 
 ### Development

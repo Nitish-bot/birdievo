@@ -1,8 +1,8 @@
 use lib_simulation as sim;
 use rand::prelude::*;
- use wasm_bindgen::prelude::*;
- 
- #[wasm_bindgen]
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
 pub struct Simulation {
     rng: ThreadRng,
     sim: sim::Simulation,
@@ -23,7 +23,18 @@ impl Simulation {
     }
 
     pub fn step(&mut self) {
-        self.sim.step();
+        self.sim.step(&mut self.rng);
+    }
+
+    pub fn train(&mut self) -> String{
+        let stats = self.sim.train(&mut self.rng);
+        
+        format!(
+            "min={:.2}, max={:.2}, avg={:.2}",
+            stats.min_fitness,
+            stats.max_fitness,
+            stats.avg_fitness,
+        )
     }
 }
 
@@ -59,23 +70,23 @@ impl From<&sim::Animal> for Animal {
         Self {
             x: animal.position().x,
             y: animal.position().y,
-            rotation: animal.angle(),
+            rotation: animal.rotation(),
         }
     }
- }
+}
 
- #[wasm_bindgen]
- #[derive(Clone, Debug)]
- pub struct Food {
+#[wasm_bindgen]
+#[derive(Clone, Debug)]
+pub struct Food {
     pub x: f32,
     pub y: f32,
- }
+}
 
- impl From<&sim::Food> for Food {
+impl From<&sim::Food> for Food {
     fn from(food: &sim::Food) -> Self {
         Self {
             x: food.position().x,
             y: food.position().y,
         }
     }
- }
+}

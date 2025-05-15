@@ -7,6 +7,10 @@ const viewport = document.getElementById('viewport');
 CanvasRenderingContext2D.prototype.drawTriangle = draw_triangle;
 CanvasRenderingContext2D.prototype.drawCircle = draw_circle;
 
+document.getElementById('train').onclick = () => {
+    console.log(simulation.train());
+}
+
 const viewportWidth = viewport.width;
 const viewportHeight = viewport.height;
 const ctx = high_res_ctx(viewport);
@@ -31,7 +35,10 @@ function redraw() {
             animal.x * viewportWidth,
             animal.y * viewportHeight,
             0.02 * viewport.width,
-            animal.rotation,
+            // the 2d renderer context is rotated  by 
+            // PI / 2 radians compared to the standard plane
+            // used by rust's insides
+            animal.rotation - Math.PI / 2,
         )
     }
 

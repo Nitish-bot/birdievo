@@ -1,8 +1,8 @@
+use rand::prelude::SliceRandom;
 /// This is an implementation of a genetic algorithm in Rust.
 /// Genetic algorithm is one that estimates and clocks current
 /// solutions, and then improves them using the best of the bunch
-use rand::{ Rng, RngCore };
-use rand::prelude::SliceRandom;
+use rand::{Rng, RngCore};
 use std::ops::Index;
 
 pub struct GeneticAlgorithm<S> {
@@ -13,37 +13,41 @@ pub struct GeneticAlgorithm<S> {
 
 impl<S> GeneticAlgorithm<S>
 where
-    S: SelectionMethod
+    S: SelectionMethod,
 {
     pub fn new(
         selection_method: S,
         crossover_method: impl CrossoverMethod + 'static,
-        mutation_method: impl MutationMethod + 'static
+        mutation_method: impl MutationMethod + 'static,
     ) -> Self {
-        Self { 
+        Self {
             selection_method,
             crossover_method: Box::new(crossover_method),
             mutation_method: Box::new(mutation_method),
         }
     }
 
-    pub fn evolve<I>(&self, rng: &mut dyn RngCore, population: &[I]) -> Vec<I>
+    pub fn evolve<I>(&self, rng: &mut dyn RngCore, population: &[I]) -> (Vec<I>, Statistics)
     where
         I: Individual,
     {
         assert!(!population.is_empty());
 
-        (0..population.len())
+        let new_pop = (0..population.len())
             .map(|_| {
                 let parent_a = self.selection_method.select(rng, population).chromosome();
                 let parent_b = self.selection_method.select(rng, population).chromosome();
                 let mut child = self.crossover_method.crossover(rng, parent_a, parent_b);
-                
+
                 self.mutation_method.mutate(rng, &mut child);
 
                 I::create(child)
             })
-            .collect()
+            .collect();
+
+        let stats = Statistics::new(population);
+
+        (new_pop, stats)
     }
 }
 
@@ -155,9 +159,14 @@ pub struct GaussianMutation {
 
 impl GaussianMutation {
     pub fn new(probability: f32, coefficient: f32) -> Self {
-        assert!(probability >= 0. && probability <= 1.);
+        if !(0. ..=1.).contains(&probability) {
+            panic!("Probability is on b/w 0 & 1")
+        };
 
-        Self { probability, coefficient }
+        Self {
+            probability,
+            coefficient,
+        }
     }
 }
 
@@ -199,6 +208,39 @@ pub trait MutationMethod {
     fn mutate(&self, rng: &mut dyn RngCore, child: &mut Chromosome);
 }
 
+#[derive(Clone, Debug)]
+pub struct Statistics {
+    pub min_fitness: f32,
+    pub max_fitness: f32,
+    pub avg_fitness: f32,
+}
+
+impl Statistics {
+    fn new<I>(population: &[I]) -> Self
+    where
+        I: Individual,
+    {
+        assert!(!population.is_empty());
+
+        let mut min_fitness = population[0].fitness();
+        let mut max_fitness = min_fitness;
+        let mut sum_fitness = 0.0;
+
+        for i in population {
+            let fitness = i.fitness();
+
+            min_fitness = min_fitness.min(fitness);
+            max_fitness = max_fitness.max(fitness);
+            sum_fitness += fitness;
+        }
+
+        Self {
+            min_fitness,
+            max_fitness,
+            avg_fitness: sum_fitness / (population.len() as f32),
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -237,9 +279,7 @@ mod tests {
 
         fn fitness(&self) -> f32 {
             match self {
-                Self::WithChromosome { chromosome } => {
-                    chromosome.iter().sum()
-                }
+                Self::WithChromosome { chromosome } => chromosome.iter().sum(),
 
                 Self::WithFitness { fitness } => *fitness,
             }
@@ -264,17 +304,10 @@ mod tests {
                 .select(&mut rng, &population)
                 .fitness() as i32;
 
-            *actual_histogram
-                .entry(fitness)
-                .or_insert(0) += 1;
+            *actual_histogram.entry(fitness).or_insert(0) += 1;
         }
-        
-        let expected_histogram = BTreeMap::from_iter([
-            (1, 97),
-            (2, 208),
-            (3, 302),
-            (4, 393),
-        ]);
+
+        let expected_histogram = BTreeMap::from_iter([(1, 97), (2, 208), (3, 302), (4, 393)]);
 
         assert_eq!(actual_histogram, expected_histogram);
     }
@@ -282,14 +315,22 @@ mod tests {
     #[test]
     fn uniform_crossover() {
         let mut rng = ChaCha8Rng::from_seed(Default::default());
-        
+
         let parent_a = (1..100).map(|n| n as f32).collect();
         let parent_b = (1..100).map(|n| -n as f32).collect();
-        
+
         let child = UniformCrossover.crossover(&mut rng, &parent_a, &parent_b);
 
-        let diff_a = child.iter().zip(parent_a.into_iter()).filter(|(c, p)| *c != p).count();
-        let diff_b = child.iter().zip(parent_b.into_iter()).filter(|(c, p)| *c != p).count();
+        let diff_a = child
+            .iter()
+            .zip(parent_a.into_iter())
+            .filter(|(c, p)| *c != p)
+            .count();
+        let diff_b = child
+            .iter()
+            .zip(parent_b.into_iter())
+            .filter(|(c, p)| *c != p)
+            .count();
 
         assert_eq!(diff_a, 49);
         assert_eq!(diff_b, 50);
@@ -351,7 +392,7 @@ mod tests {
                     let actual = actual(0.);
                     let expected = vec![1., 2., 3., 4., 5.];
 
-                    assert_relative_eq!(actual.as_slice(), expected.as_slice());                    
+                    assert_relative_eq!(actual.as_slice(), expected.as_slice());
                 }
             }
             mod and_non_zero_coefficient {
@@ -367,7 +408,7 @@ mod tests {
         }
         mod given_max_probability {
             use approx::assert_relative_eq;
-            
+
             fn actual(coefficient: f32) -> Vec<f32> {
                 super::actual(1.0, coefficient)
             }
@@ -418,7 +459,7 @@ mod tests {
         ];
 
         for _ in 0..10 {
-            population = gen_algo.evolve(&mut rng, &population);
+            population = gen_algo.evolve(&mut rng, &population).0;
         }
 
         let expected_population = vec![

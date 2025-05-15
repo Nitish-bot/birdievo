@@ -6,3 +6,9 @@ edition = "2024"
 [dependencies]
 glam = { workspace = true }
 rand = { workspace = true }
+lib-genetic-algorithm = { path="../genetic-algorithm" }
+lib-neural-network = { path="../neural-network" }
+
+
+[dev-dependencies]
+test-case = "^3.3.1"
