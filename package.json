@@ -4,8 +4,8 @@
   "description": "watch bird evo",
   "main": "./bundle.js",
   "scripts": {
-    "build": "pnpm wasm:build && webpack --mode production",
     "start": "pnpm wasm:build && pnpm install && webpack serve --mode development",
+    "build": "pnpm wasm:build && webpack --mode production",
     "wasm:build": "wasm-pack build ./libs/simulation-wasm --out-dir=../../pkg"
   },
   "license": "MIT",

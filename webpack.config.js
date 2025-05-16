@@ -10,7 +10,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.js",
-    publicPath: 'auto',
+    publicPath: './',
   },
   devServer: {
     static: path.join(__dirname, "dist"),
@@ -20,9 +20,10 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
-        { from:"index.html", to:"index.html" },
-        { from:"pkg", to: "pkg" },
-        { from:"utils.js", to: "utils.js" },
+        { from: "index.html", to: "index.html" },
+        { from: "pkg", to: "pkg" },
+        { from: "utils.js", to: "utils.js" },
+        { from: ".nojekyll", to: ".nojekyll" },
       ]
     })
   ],

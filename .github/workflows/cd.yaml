@@ -40,8 +40,15 @@ jobs:
         with:
           version: 10
 
+      - run: touch .nojekyll
       - run: pnpm install
       - run: pnpm build
+
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with: 
+          path: ./dist
 
   deploy:
     runs-on: ubuntu-latest
