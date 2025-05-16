@@ -10,6 +10,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.js",
+    publicPath: 'auto',
   },
   devServer: {
     static: path.join(__dirname, "dist"),
@@ -21,6 +22,7 @@ module.exports = {
       patterns: [
         { from:"index.html", to:"index.html" },
         { from:"pkg", to: "pkg" },
+        { from:"utils.js", to: "utils.js" },
       ]
     })
   ],
