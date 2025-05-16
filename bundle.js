@@ -1,4 +1,4 @@
-import * as sim from 'simulation-wasm';
+import * as sim from './pkg/simulation_wasm.js';
 import { draw_triangle, draw_circle,  high_res_ctx } from './utils.js';
 
 const simulation = new sim.Simulation();

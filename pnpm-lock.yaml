@@ -11,9 +11,6 @@ importers:
       copy-webpack-plugin:
         specifier: ^11.0.0
         version: 11.0.0(webpack@5.99.2)
-      simulation-wasm:
-        specifier: file:pkg
-        version: file:pkg
       webpack:
         specifier: ^5.89.0
         version: 5.99.2(webpack-cli@5.1.4)
@@ -1087,9 +1084,6 @@ packages:
 
   signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
-
-  simulation-wasm@file:pkg:
-    resolution: {directory: pkg, type: directory}
 
   slash@4.0.0:
     resolution: {integrity: sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==}
@@ -2398,8 +2392,6 @@ snapshots:
       side-channel-weakmap: 1.0.2
 
   signal-exit@3.0.7: {}
-
-  simulation-wasm@file:pkg: {}
 
   slash@4.0.0: {}
 
