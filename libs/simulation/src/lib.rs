@@ -12,11 +12,11 @@ use lib_neural_network as nn;
 use lib_genetic_algorithm as ga;
 use glam::Vec2;
 use rand::{Rng, RngCore};
-use std::{f32::consts::*, thread::current};
+use std::f32::consts::*;
 
-const MIN_SPEED: f32 = 0.001;
-const MAX_SPEED: f32 = 0.010;
-const MAX_ACCEL: f32 = 0.2;
+const MIN_SPEED: f32 = 0.0001;
+const MAX_SPEED: f32 = 0.005;
+const MAX_ACCEL: f32 = 0.0005;
 const MAX_ROTATION: f32 = FRAC_PI_4;
 // The max age of birds before transferring
 // it's data into the ga

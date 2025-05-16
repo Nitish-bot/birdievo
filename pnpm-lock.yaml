@@ -12,7 +12,7 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0(webpack@5.99.2)
       simulation-wasm:
-        specifier: file:./pkg
+        specifier: file:pkg
         version: file:pkg
       webpack:
         specifier: ^5.89.0

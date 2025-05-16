@@ -71,10 +71,6 @@ impl Animal {
     }
 
     pub fn process_motion(&mut self) {
-        // We add PI / 2 radians to the rotation since our
-        // 2D rendering canvas is a co-ordinate system rotated
-        // by PI / 2 radians
-        // TLDR: x and y increase in towards the bottom right
         let rotation = self.rotation();
         let pos = self.position();
 
@@ -115,11 +111,4 @@ impl Animal {
         self.speed = (self.speed() + speed).clamp(MIN_SPEED, MAX_SPEED);
         self.rotation = self.rotation() + rotation;
     }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-
 }

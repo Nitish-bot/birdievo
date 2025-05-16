@@ -9,6 +9,6 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 glam = { workspace = true }
 getrandom = { version = "0.2", features = ["js"] }
-lib-simulation = { path = "../../libs/simulation" }
+lib-simulation = { path = "../simulation" }
 rand = { workspace = true }
 wasm-bindgen = "0.2.100"

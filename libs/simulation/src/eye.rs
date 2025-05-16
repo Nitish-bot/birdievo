@@ -1,7 +1,5 @@
 use crate::*;
 
-use std::f32::EPSILON;
-
 const FOV_RANGE: f32 = 0.25;
 const FOV_ANGLE: f32 = PI + FRAC_PI_4;
 const CELLS: usize = 9;
