@@ -40,10 +40,7 @@ impl Animal {
         self.brain.as_chromosome()
     }
 
-    pub fn from_chromosome(
-        chromosome: ga::Chromosome,
-        rng: &mut dyn RngCore,
-    ) -> Self {
+    pub fn from_chromosome(chromosome: ga::Chromosome, rng: &mut dyn RngCore) -> Self {
         let eye = Eye::default();
         let brain = Brain::from_chromosome(chromosome, &eye);
 
@@ -74,7 +71,7 @@ impl Animal {
         let rotation = self.rotation();
         let pos = self.position();
 
-        let angle_vector = Vec2::new(rotation.cos(), rotation.sin());        
+        let angle_vector = Vec2::new(rotation.cos(), rotation.sin());
         let displacement = angle_vector * self.speed();
 
         let new_pos = (pos + displacement).clamp(Vec2::splat(0.05), Vec2::splat(0.95));
@@ -94,11 +91,9 @@ impl Animal {
     }
 
     pub fn process_brains(&mut self, foods: &Vec<Food>) {
-        let vision = self.eye.process_vision(
-            self.position(),
-            self.rotation(),
-            foods,
-        );
+        let vision = self
+            .eye
+            .process_vision(self.position(), self.rotation(), foods);
 
         let response = self.brain.propogate(vision);
 

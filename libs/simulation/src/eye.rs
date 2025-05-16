@@ -39,19 +39,17 @@ impl Eye {
             let vec = food_position - position;
             let distance = vec.length();
             let angle = wrap_to_pi(Vec2::Y.angle_to(vec) - rotation);
-               
+
             // Our birdie sees either both directions equally and
             // since the angle is already offset by the rotation
             // the birdie sees from - 1/2 fov_angle to positive of the same
             // Hence we add it once so angle ranges in [0, fov_angle]
             let angle = angle + fov_angle / 2.;
-            
-            if distance >= fov_range
-                || !(0. ..=fov_angle).contains(&angle)
-            {
+
+            if distance >= fov_range || !(0. ..=fov_angle).contains(&angle) {
                 continue;
             }
-            
+
             // How far along the food is in the fov in range [0, 1]
             let cell = angle / fov_angle;
             println!("{}", cell);
@@ -59,11 +57,11 @@ impl Eye {
             // Get the index of cell by multiplying it with total cells
             let cell = cell * (self.cells as f32);
             let cell = (cell as usize).min(cells.len() - 1);
-            
-            // The distance between the eyes and food 
+
+            // The distance between the eyes and food
             // as an analogy for intensity of stimulation
             let cell_activation = (fov_range - distance) / fov_range;
-        
+
             cells[cell] += cell_activation;
         }
         println!("{:?}", cells);
@@ -79,14 +77,13 @@ impl Default for Eye {
 
 pub fn wrap_to_pi(angle: f32) -> f32 {
     if angle > PI {
-        angle - 2. * PI 
+        angle - 2. * PI
     } else if angle < -PI {
         angle + 2. * PI
     } else {
         angle
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -109,11 +106,8 @@ mod tests {
         fn run(self) {
             let eye = Eye::new(self.fov_range, self.fov_angle, TEST_EYE_CELLS);
 
-            let actual_vision = eye.process_vision(
-                Vec2::new(self.x, self.y),
-                self.rotation,
-                &self.foods,
-            );
+            let actual_vision =
+                eye.process_vision(Vec2::new(self.x, self.y), self.rotation, &self.foods);
 
             let actual_vision: Vec<&str> = actual_vision
                 .into_iter()
@@ -133,7 +127,6 @@ mod tests {
             let vision = actual_vision.join("");
 
             assert_eq!(vision, self.expected_vision)
-
         }
     }
 
@@ -142,7 +135,7 @@ mod tests {
     #[test_case(0.8, "      +      ")]
     #[test_case(0.7, "      .      ")]
     #[test_case(0.6, "      .      ")]
-    #[test_case(0.5, "             ")] 
+    #[test_case(0.5, "             ")]
     #[test_case(0.4, "             ")]
     #[test_case(0.3, "             ")]
     #[test_case(0.2, "             ")]
@@ -155,8 +148,9 @@ mod tests {
             y: 0.5,
             rotation: 0.0,
             fov_range,
-            expected_vision
-        }.run()
+            expected_vision,
+        }
+        .run()
     }
 
     #[test_case(0.25 * PI, " +         + ")] // FOV is narrow = 2 foods
@@ -185,7 +179,8 @@ mod tests {
             rotation: 3.0 * FRAC_PI_2,
             fov_angle,
             expected_vision,
-        }.run()
+        }
+        .run()
     }
 
     #[test_case(0.00 * PI, "         +   ")] // Food is to our right
@@ -195,7 +190,7 @@ mod tests {
     #[test_case(1.00 * PI, "   +         ")] // Food is to our left
     #[test_case(1.25 * PI, " +           ")]
     // This 1.5 * PI test case was originally
-    // #[test_case(1.50 * PI, "            +")] 
+    // #[test_case(1.50 * PI, "            +")]
     // but I assume this is due to differences in glam and nalgebra
     #[test_case(1.50 * PI, "+            ")] // Food is behind us
     #[test_case(1.75 * PI, "           + ")] // (we continue to see it
@@ -211,7 +206,8 @@ mod tests {
             y: 0.5,
             rotation,
             expected_vision,
-        }.run()
+        }
+        .run()
     }
 
     // Checking the X axis:
@@ -248,7 +244,8 @@ mod tests {
             x,
             y,
             expected_vision,
-        }.run()
+        }
+        .run()
     }
 
     fn food(x: f32, y: f32) -> Food {

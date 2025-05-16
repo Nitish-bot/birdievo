@@ -7,10 +7,7 @@ pub struct Brain {
 
 impl Brain {
     pub fn random(rng: &mut dyn RngCore, eye: &Eye) -> Self {
-        let nn = nn::Network::random(
-            rng,
-            &Self::topology(eye),
-        );
+        let nn = nn::Network::random(rng, &Self::topology(eye));
 
         Self { nn }
     }
@@ -19,15 +16,9 @@ impl Brain {
         self.nn.weights().collect()
     }
 
-    pub fn from_chromosome(
-        chromosome: ga::Chromosome,
-        eye: &Eye,
-    ) -> Self {
+    pub fn from_chromosome(chromosome: ga::Chromosome, eye: &Eye) -> Self {
         Self {
-            nn: nn::Network::from_weights(
-                &Self::topology(eye),
-                chromosome,
-            ),
+            nn: nn::Network::from_weights(&Self::topology(eye), chromosome),
         }
     }
 
@@ -41,7 +32,6 @@ impl Brain {
             nn::LayerTopology {
                 neurons: eye.cells(),
             },
-
             // The Hidden Layer
             //
             // The rule of thumb is to start with a single hidden
@@ -50,7 +40,6 @@ impl Brain {
             nn::LayerTopology {
                 neurons: 2 * eye.cells(),
             },
-
             // The Output Layer
             //
             // Since the brain will control our bird's speed and

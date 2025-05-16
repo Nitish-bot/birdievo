@@ -27,23 +27,14 @@ impl Network {
         Self { layers }
     }
 
-    pub fn from_weights(
-        layers: &[LayerTopology],
-        weights: impl IntoIterator<Item = f32>,
-    ) -> Self {
+    pub fn from_weights(layers: &[LayerTopology], weights: impl IntoIterator<Item = f32>) -> Self {
         assert!(layers.len() > 1);
-        
+
         let mut weights = weights.into_iter();
-        
+
         let layers = layers
             .windows(2)
-            .map(|layers| {
-                Layer::from_weights(
-                    layers[0].neurons,
-                    layers[1].neurons,
-                    &mut weights,
-                )
-            })
+            .map(|layers| Layer::from_weights(layers[0].neurons, layers[1].neurons, &mut weights))
             .collect();
 
         if weights.next().is_some() {
@@ -59,7 +50,7 @@ impl Network {
             .fold(inputs, |inputs, layer| layer.propogate(inputs))
     }
 
-    pub fn weights(&self) -> impl Iterator<Item = f32> + '_{
+    pub fn weights(&self) -> impl Iterator<Item = f32> + '_ {
         self.layers
             .iter()
             .flat_map(|layer| layer.neurons.iter())
@@ -117,10 +108,7 @@ impl Neuron {
         Self { bias, weights }
     }
 
-    fn from_weights(
-        input_size: usize,
-        weights: &mut dyn Iterator<Item = f32>,
-    ) -> Self {
+    fn from_weights(input_size: usize, weights: &mut dyn Iterator<Item = f32>) -> Self {
         let bias = weights.next().expect("Not enough weights");
 
         let weights = (0..input_size)
@@ -193,10 +181,10 @@ mod tests {
                         weights: vec![0.6, 0.7, 0.8],
                     }],
                 },
-            ]
+            ],
         };
 
-        let actual: Vec<f32>  = network.weights().collect();
+        let actual: Vec<f32> = network.weights().collect();
         let expected = vec![0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];
 
         for i in 0..expected.len() {
@@ -206,15 +194,12 @@ mod tests {
 
     #[test]
     fn from_weights() {
-        let layers = &[
-            LayerTopology { neurons: 3 },
-            LayerTopology { neurons: 2 },
-        ];
+        let layers = &[LayerTopology { neurons: 3 }, LayerTopology { neurons: 2 }];
 
         let weights = vec![0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];
         let network = Network::from_weights(layers, weights.clone());
         let actual: Vec<_> = network.weights().collect();
-    
+
         for i in 0..actual.len() {
             assert_almost_eq!(weights[i], actual[i]);
         }

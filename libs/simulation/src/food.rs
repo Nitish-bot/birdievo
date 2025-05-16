@@ -7,9 +7,7 @@ pub struct Food {
 
 impl Food {
     pub fn new(position: Vec2) -> Self {
-        Self {
-            position
-        }
+        Self { position }
     }
 
     pub fn random(rng: &mut dyn RngCore) -> Self {
@@ -21,6 +19,6 @@ impl Food {
     }
 
     pub fn set_position(&mut self, position: Vec2) {
-        self.position = position.clamp(Vec2::splat(0.05),Vec2::splat(0.95));
+        self.position = position.clamp(Vec2::splat(0.05), Vec2::splat(0.95));
     }
 }

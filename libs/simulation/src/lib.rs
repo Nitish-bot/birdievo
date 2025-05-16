@@ -6,11 +6,11 @@ mod eye;
 mod food;
 mod world;
 
-pub use self::{animal::*, brain::*, eye::*, food::*, world::*};
 use self::animal_agent::*;
-use lib_neural_network as nn;
-use lib_genetic_algorithm as ga;
+pub use self::{animal::*, brain::*, eye::*, food::*, world::*};
 use glam::Vec2;
+use lib_genetic_algorithm as ga;
+use lib_neural_network as nn;
 use rand::{Rng, RngCore};
 use std::f32::consts::*;
 
@@ -38,11 +38,7 @@ impl Simulation {
             ga::GaussianMutation::new(0.01, 0.3),
         );
 
-        Self {
-            world,
-            ga,
-            age: 0,
-        }
+        Self { world, ga, age: 0 }
     }
 
     pub fn world(&self) -> &World {
@@ -53,7 +49,7 @@ impl Simulation {
         self.world.step(rng);
 
         self.age += 1;
-        
+
         if self.age > GENERATION_LENGTH {
             Some(self.evolve(rng))
         } else {
@@ -80,10 +76,7 @@ impl Simulation {
             .map(AnimalAgent::from_animal)
             .collect();
 
-        let (evolved_poplu, stats) = self.ga.evolve(
-            rng,
-            &current_poplu
-        );
+        let (evolved_poplu, stats) = self.ga.evolve(rng, &current_poplu);
 
         self.world.animals = evolved_poplu
             .into_iter()
