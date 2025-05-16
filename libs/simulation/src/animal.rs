@@ -90,7 +90,7 @@ impl Animal {
         }
     }
 
-    pub fn process_brains(&mut self, foods: &Vec<Food>) {
+    pub fn process_brains(&mut self, foods: &[Food]) {
         let vision = self
             .eye
             .process_vision(self.position(), self.rotation(), foods);

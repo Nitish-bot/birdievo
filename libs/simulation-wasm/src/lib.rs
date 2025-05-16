@@ -36,6 +36,12 @@ impl Simulation {
     }
 }
 
+impl Default for Simulation {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
 pub struct World {
